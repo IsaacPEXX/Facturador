@@ -974,6 +974,7 @@
     document.getElementById("counter-display").textContent = fmtDateTime(fechaPago);
 
     updateAppIdentity(marca, headerBg, logoColor);
+    invalidarCache();
   }
 
   function generarNuevo(){
@@ -1111,13 +1112,30 @@
     return radio ? radio.value : "pdf";
   }
 
+  const archivoCache = { pdf: null, imagen: null };
+  let cacheTimer = null;
+  function invalidarCache(){
+    archivoCache.pdf = null;
+    archivoCache.imagen = null;
+    clearTimeout(cacheTimer);
+    cacheTimer = setTimeout(precalentarCache, 700);
+  }
+  async function precalentarCache(){
+    try { archivoCache.pdf = await generarArchivoFactura("pdf"); } catch (e){ /* se generará al vuelo si hace falta */ }
+    try { archivoCache.imagen = await generarArchivoFactura("imagen"); } catch (e){ /* idem */ }
+  }
+  async function obtenerArchivo(formato){
+    if (archivoCache[formato]) return archivoCache[formato];
+    return generarArchivoFactura(formato);
+  }
+
   async function generarArchivoFactura(formato){
     if (document.fonts && document.fonts.ready) {
       try { await document.fonts.ready; } catch (e) { /* ignore */ }
     }
     const node = document.getElementById("invoice");
     const canvas = await html2canvas(node, {
-      scale: 2,
+      scale: 1.5,
       backgroundColor: "#ffffff",
       onclone: function(clonedDoc){
         clonedDoc.querySelectorAll(".editor-only").forEach(function(el){ el.remove(); });
@@ -1127,7 +1145,8 @@
     const baseName = "factura-" + slug(cliente);
 
     if (formato === "imagen") {
-      const blob = await new Promise(function(resolve){ canvas.toBlob(resolve, "image/jpeg", 0.92); });
+      const imgDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+      const blob = await (await fetch(imgDataUrl)).blob();
       const filename = baseName + ".jpg";
       return { file: new File([blob], filename, { type: "image/jpeg" }), blob: blob, filename: filename };
     }
@@ -1156,7 +1175,7 @@
     fallbackNote.hidden = true;
     try {
       const formato = formatoSeleccionado();
-      const { file } = await generarArchivoFactura(formato);
+      const { file } = await obtenerArchivo(formato);
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: file.name });
       } else {
@@ -1204,7 +1223,7 @@
     fallbackNote.hidden = true;
     try {
       const formato = formatoSeleccionado();
-      const { blob, filename } = await generarArchivoFactura(formato);
+      const { blob, filename } = await obtenerArchivo(formato);
       await guardarArchivoBlob(blob, filename);
     } catch (err) {
       mostrarFallback("No se pudo generar el archivo (" + (err && err.message ? err.message : "error desconocido") + "). Intenta de nuevo o usa Imprimir / Guardar PDF.");
@@ -1277,16 +1296,9 @@
   ajustarTitulo(0);
   ajustarMarca(0);
 
-  // Precalentamiento silencioso: renderiza una vez en segundo plano para que
-  // el primer clic real de "Descargar"/"Compartir" no tenga que esperar a que
-  // las fuentes y html2canvas terminen de prepararse.
-  setTimeout(function(){
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function(){
-        html2canvas(document.getElementById("invoice"), { scale: 1, backgroundColor: "#ffffff" }).catch(function(){});
-      });
-    }
-  }, 600);
+  // El propio generarNuevo() de arriba ya llamó a render(), que a su vez
+  // deja agendado invalidarCache() -> precalentarCache(): el PDF y la
+  // imagen quedan listos en segundo plano antes de que aprietes nada.
 })();
 </script>
 </body>
