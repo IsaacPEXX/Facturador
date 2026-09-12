@@ -340,7 +340,7 @@
     gap:16px;
   }
   .invoice-header .brand{ gap:10px; }
-  .invoice-header .brand-name{ color:var(--logo-color); font-size:1.15rem; }
+  .invoice-header .brand-name{ color:var(--logo-color); font-size:26px; }
   .invoice-header-right{ text-align:right; }
   .factura-label{
     font-family:"Archivo Black", sans-serif;
@@ -511,7 +511,7 @@
 
     <div class="field">
       <label for="marca">Nombre de la marca</label>
-      <input id="marca" type="text" placeholder="Ej. Perform TV" value="Perform TV" maxlength="28">
+      <input id="marca" type="text" placeholder="Ej. Perform TV" maxlength="28">
     </div>
 
     <div class="row-2">
@@ -530,7 +530,7 @@
         <label>Tamaño nombre marca</label>
         <div class="stepper">
           <button type="button" class="btn-secondary step-btn" id="marca-menos" aria-label="Reducir tamaño">−</button>
-          <span class="mono" id="marca-size-display">18px</span>
+          <span class="mono" id="marca-size-display">26px</span>
           <button type="button" class="btn-secondary step-btn" id="marca-mas" aria-label="Aumentar tamaño">+</button>
         </div>
       </div>
@@ -854,12 +854,13 @@
   }
 
   function updateAppIdentity(marca, headerBg, logoColor){
-    const shortName = marca.slice(0, 12) || "Recibos";
-    const icon512 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "P").toUpperCase(), 512);
-    const icon180 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "P").toUpperCase(), 180);
+    const nombreApp = marca || "Recibos";
+    const shortName = nombreApp.slice(0, 12);
+    const icon512 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "R").toUpperCase(), 512);
+    const icon180 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "R").toUpperCase(), 180);
 
     const manifest = {
-      name: marca + " — Comprobantes",
+      name: nombreApp + " — Comprobantes",
       short_name: shortName,
       start_url: ".",
       display: "standalone",
@@ -876,14 +877,14 @@
     document.getElementById("apple-icon-link").setAttribute("href", icon180);
     document.getElementById("theme-color-meta").setAttribute("content", headerBg);
     document.getElementById("apple-title-meta").setAttribute("content", shortName);
-    document.getElementById("page-title").textContent = marca + " — Comprobantes";
-    document.title = marca + " — Comprobantes";
+    document.getElementById("page-title").textContent = nombreApp + " — Comprobantes";
+    document.title = nombreApp + " — Comprobantes";
   }
 
   let current = { fechaPago: null };
 
   function render(){
-    const marca = document.getElementById("marca").value.trim() || "Mi Negocio";
+    const marca = document.getElementById("marca").value.trim();
     const headerBg = document.getElementById("color-fondo").value;
     const logoColor = document.getElementById("color-logo").value;
     const cliente = document.getElementById("cliente").value.trim() || "Cliente";
