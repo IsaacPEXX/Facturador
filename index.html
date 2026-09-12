@@ -1112,6 +1112,9 @@
   }
 
   async function generarArchivoFactura(formato){
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (e) { /* ignore */ }
+    }
     const node = document.getElementById("invoice");
     const canvas = await html2canvas(node, {
       scale: 2,
@@ -1273,6 +1276,17 @@
   generarNuevo();
   ajustarTitulo(0);
   ajustarMarca(0);
+
+  // Precalentamiento silencioso: renderiza una vez en segundo plano para que
+  // el primer clic real de "Descargar"/"Compartir" no tenga que esperar a que
+  // las fuentes y html2canvas terminen de prepararse.
+  setTimeout(function(){
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function(){
+        html2canvas(document.getElementById("invoice"), { scale: 1, backgroundColor: "#ffffff" }).catch(function(){});
+      });
+    }
+  }, 600);
 })();
 </script>
 </body>
