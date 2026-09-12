@@ -330,8 +330,9 @@
   }
   .invoice-header{
     --hdr-bg: #10163a;
+    --hdr-bg-dark: #0a0e26;
     --logo-color: #ffffff;
-    background: linear-gradient(135deg, var(--hdr-bg) 0%, color-mix(in srgb, var(--hdr-bg) 65%, black) 100%);
+    background: linear-gradient(135deg, var(--hdr-bg) 0%, var(--hdr-bg-dark) 100%);
     padding:26px 28px;
     display:flex;
     justify-content:space-between;
@@ -822,6 +823,14 @@
     n = Number(n);
     return n + (n === 1 ? " dispositivo" : " dispositivos simultáneos");
   }
+  function darkenHex(hex, factor){
+    hex = (hex || "#10163a").replace("#", "");
+    if (hex.length === 3) hex = hex.split("").map(function(c){ return c + c; }).join("");
+    const r = Math.round(parseInt(hex.substring(0, 2), 16) * factor);
+    const g = Math.round(parseInt(hex.substring(2, 4), 16) * factor);
+    const b = Math.round(parseInt(hex.substring(4, 6), 16) * factor);
+    return "#" + [r, g, b].map(function(v){ return Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0"); }).join("");
+  }
   function iconDataURL(bg, fg, letter, size){
     const c = document.createElement("canvas");
     c.width = size; c.height = size;
@@ -947,6 +956,7 @@
     document.getElementById("out-marca-footer").textContent = marca;
     document.getElementById("logo-mark").setAttribute("fill", logoColor);
     document.getElementById("invoice-header").style.setProperty("--hdr-bg", headerBg);
+    document.getElementById("invoice-header").style.setProperty("--hdr-bg-dark", darkenHex(headerBg, 0.65));
     document.getElementById("invoice-header").style.setProperty("--logo-color", logoColor);
 
     document.getElementById("out-cliente").textContent = cliente;
@@ -1128,6 +1138,12 @@
     return { file: new File([blob], filename, { type: "application/pdf" }), blob: blob, filename: filename };
   }
 
+  function mostrarFallback(msg){
+    const fallbackNote = document.getElementById("share-fallback-note");
+    fallbackNote.textContent = msg;
+    fallbackNote.hidden = false;
+  }
+
   async function compartirArchivo(){
     const btn = document.getElementById("btn-whatsapp");
     const fallbackNote = document.getElementById("share-fallback-note");
@@ -1141,11 +1157,11 @@
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: file.name });
       } else {
-        fallbackNote.hidden = false;
+        mostrarFallback("Tu navegador no ofrece compartir el archivo directamente (pasa en algunos PC). Usa Imprimir / Guardar PDF y adjúntalo a mano en WhatsApp.");
       }
     } catch (err) {
       if (!(err && err.name === "AbortError")) {
-        fallbackNote.hidden = false;
+        mostrarFallback("No se pudo generar/compartir el archivo (" + (err && err.message ? err.message : "error desconocido") + "). Intenta de nuevo o usa Imprimir / Guardar PDF.");
       }
     } finally {
       btn.disabled = false;
@@ -1178,15 +1194,17 @@
 
   async function descargarArchivo(){
     const btn = document.getElementById("btn-descargar");
+    const fallbackNote = document.getElementById("share-fallback-note");
     const originalLabel = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Generando…";
+    fallbackNote.hidden = true;
     try {
       const formato = formatoSeleccionado();
       const { blob, filename } = await generarArchivoFactura(formato);
       await guardarArchivoBlob(blob, filename);
     } catch (err) {
-      /* generation failed silently; user can retry */
+      mostrarFallback("No se pudo generar el archivo (" + (err && err.message ? err.message : "error desconocido") + "). Intenta de nuevo o usa Imprimir / Guardar PDF.");
     } finally {
       btn.disabled = false;
       btn.textContent = originalLabel;
