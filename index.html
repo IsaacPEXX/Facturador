@@ -1,0 +1,1248 @@
+<title id="page-title">Perform TV Recibos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<meta name="theme-color" id="theme-color-meta" content="#10163a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" id="apple-title-meta" content="Recibos">
+<link rel="apple-touch-icon" id="apple-icon-link">
+<link rel="manifest" id="manifest-link">
+<style>
+  :root{
+    --ink:#10163a;
+    --ink-soft:#565c82;
+    --ink-faint:#8b90b3;
+    --accent:#ee1876;
+    --accent-2:#ff5fa8;
+    --accent-soft:#ffe1ee;
+    --surface:#ffffff;
+    --bg:#f2f1f7;
+    --bg-panel:#eae8f3;
+    --border:#dedcea;
+    --success:#1f9d55;
+    --success-bg:#e8f7ee;
+    --warn-bg:#fdeaf0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#eef0ff;
+      --ink-soft:#b3b8de;
+      --ink-faint:#7377a3;
+      --accent:#ff5fa8;
+      --accent-2:#ff8ec4;
+      --accent-soft:#3a1730;
+      --surface:#181c3a;
+      --bg:#0c0e21;
+      --bg-panel:#141833;
+      --border:#2c3159;
+      --success:#4ade80;
+      --success-bg:#0f2b1c;
+      --warn-bg:#331227;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#eef0ff;
+    --ink-soft:#b3b8de;
+    --ink-faint:#7377a3;
+    --accent:#ff5fa8;
+    --accent-2:#ff8ec4;
+    --accent-soft:#3a1730;
+    --surface:#181c3a;
+    --bg:#0c0e21;
+    --bg-panel:#141833;
+    --border:#2c3159;
+    --success:#4ade80;
+    --success-bg:#0f2b1c;
+    --warn-bg:#331227;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Work Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.wordmark{ text-wrap:balance; }
+
+  .shell{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    min-height:100vh;
+    max-width:1360px;
+    margin:0 auto;
+  }
+  @media (max-width: 880px){
+    .shell{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Left: control panel ---------- */
+  .panel{
+    padding:28px 24px 40px;
+    background:var(--bg-panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  @media (max-width: 880px){
+    .panel{ border-right:none; border-bottom:1px solid var(--border); }
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand svg{ width:26px; height:26px; flex:none; }
+  .brand-name{
+    font-family:"Archivo Black", ui-sans-serif, sans-serif;
+    font-size:1.05rem;
+    letter-spacing:0.01em;
+  }
+  .brand-name span{ color:var(--accent); }
+  .panel-title{
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-faint);
+    margin:4px 0 0;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .field label{
+    font-size:0.78rem;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .field input{
+    font-family:"Work Sans", sans-serif;
+    font-size:0.95rem;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus{
+    outline:2px solid var(--accent);
+    outline-offset:1px;
+  }
+  .field select{
+    font-family:"Work Sans", sans-serif;
+    font-size:0.95rem;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .row-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .stepper{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .step-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    font-size:1.1rem;
+    line-height:1;
+    flex:none;
+  }
+  .stepper .mono{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    min-width:44px;
+    text-align:center;
+  }
+
+  .auto-note{
+    font-size:0.72rem;
+    color:var(--ink-faint);
+    line-height:1.5;
+    padding:10px 12px;
+    border:1px dashed var(--border);
+    border-radius:8px;
+  }
+  .auto-note b{ color:var(--ink-soft); }
+
+  .actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:4px;
+  }
+  button{
+    font-family:"Work Sans", sans-serif;
+    font-weight:600;
+    font-size:0.92rem;
+    padding:12px 16px;
+    border-radius:9px;
+    border:1px solid transparent;
+    cursor:pointer;
+  }
+  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn-primary:hover{ background:var(--accent-2); }
+  .btn-secondary{
+    background:transparent;
+    color:var(--ink);
+    border-color:var(--border);
+  }
+  .btn-secondary:hover{ border-color:var(--ink-faint); }
+
+  .counter-line{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.72rem;
+    color:var(--ink-faint);
+    display:flex;
+    justify-content:space-between;
+  }
+
+  .checkbox-field{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .checkbox-field input[type="checkbox"]{
+    width:17px;
+    height:17px;
+    accent-color:var(--accent);
+  }
+  .checkbox-field label{
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .format-toggle{
+    display:flex;
+    gap:18px;
+  }
+  .format-toggle label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.88rem;
+    font-weight:500;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .format-toggle input{ accent-color:var(--accent); }
+  .descuento-pct-wrap[data-active="false"],
+  .vigencia-wrap[data-active="false"]{ opacity:0.45; pointer-events:none; }
+
+  .add-item-btn{
+    align-self:flex-start;
+    background:transparent;
+    border:1px dashed var(--border);
+    color:var(--ink-soft);
+    font-size:0.82rem;
+    padding:9px 14px;
+  }
+  .add-item-btn:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .remove-item-btn, .edit-item-btn{
+    border:none;
+    background:transparent;
+    color:var(--ink-faint);
+    font-size:0.85rem;
+    line-height:1;
+    padding:3px 5px;
+    margin-left:6px;
+    cursor:pointer;
+    border-radius:5px;
+  }
+  .remove-item-btn:hover{ color:var(--accent); background:var(--bg-panel); }
+  .edit-item-btn:hover{ color:var(--ink-soft); background:var(--bg-panel); }
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(16,22,58,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+  }
+  .modal{
+    width:min(380px, 100%);
+    background:var(--surface);
+    border-radius:14px;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    box-shadow:0 24px 60px -20px rgba(16,22,58,0.5);
+  }
+  .modal h3{
+    margin:0;
+    font-family:"Archivo Black", sans-serif;
+    font-size:1.05rem;
+    color:var(--ink);
+  }
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:4px;
+  }
+
+  /* ---------- Right: invoice preview ---------- */
+  .stage{
+    padding:40px 32px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+  .invoice{
+    width:100%;
+    max-width:720px;
+    background:var(--surface);
+    border-radius:16px;
+    border:1px solid var(--border);
+    box-shadow:0 20px 50px -30px rgba(16,22,58,0.35);
+    overflow:hidden;
+  }
+  .invoice-header{
+    --hdr-bg: #10163a;
+    --logo-color: #ffffff;
+    background: linear-gradient(135deg, var(--hdr-bg) 0%, color-mix(in srgb, var(--hdr-bg) 65%, black) 100%);
+    padding:26px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+  }
+  .invoice-header .brand{ gap:10px; }
+  .invoice-header .brand-name{ color:var(--logo-color); font-size:1.15rem; }
+  .invoice-header-right{ text-align:right; }
+  .factura-label{
+    font-family:"Archivo Black", sans-serif;
+    color:#fff;
+    font-size:1.4rem;
+    letter-spacing:0.02em;
+    margin:0 0 6px;
+  }
+  .pill{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:5px 12px;
+    border-radius:999px;
+  }
+
+  .invoice-body{ padding:26px 28px 30px; display:flex; flex-direction:column; gap:22px; }
+
+  .meta-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:520px){ .meta-grid{ grid-template-columns:1fr; } }
+  .meta-card{
+    background:var(--bg-panel);
+    border-left:3px solid var(--accent);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .meta-card:nth-child(2){ border-left-color: #4a5cc9; }
+  .meta-card h3{
+    margin:0 0 8px;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-faint);
+  }
+  .meta-card p{
+    margin:0 0 4px;
+    font-size:0.88rem;
+  }
+  .meta-card p b{ color:var(--ink-soft); font-weight:600; }
+  .meta-card .mono{ font-family:"IBM Plex Mono", monospace; }
+
+  table.concept{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+  }
+  table.concept thead th{
+    text-align:left;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--ink-faint);
+    border-bottom:1px solid var(--border);
+    padding:0 0 10px;
+  }
+  table.concept thead th:last-child{ text-align:right; }
+  table.concept tbody td{
+    padding:14px 0;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  table.concept tbody td:last-child{ text-align:right; font-family:"IBM Plex Mono", monospace; font-weight:600; white-space:nowrap; }
+  .concept-name{ font-weight:600; }
+  .concept-desc{ color:var(--ink-soft); font-size:0.82rem; margin-top:3px; }
+  .tag{
+    display:inline-block;
+    font-size:0.72rem;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:3px 8px;
+    margin:6px 6px 0 0;
+    color:var(--ink-soft);
+  }
+
+  .totals{
+    align-self:flex-end;
+    width:100%;
+    max-width:260px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:0.88rem;
+  }
+  .totals .line{ display:flex; justify-content:space-between; color:var(--ink-soft); }
+  .totals .line .mono{ font-family:"IBM Plex Mono", monospace; }
+  .totals .total{
+    display:flex;
+    justify-content:space-between;
+    border-top:1px solid var(--border);
+    padding-top:8px;
+    margin-top:4px;
+    font-weight:700;
+    font-size:1rem;
+  }
+  .totals .total .mono{ font-family:"IBM Plex Mono", monospace; color:var(--accent); font-size:1.15rem; }
+
+  .expiry{
+    background:var(--warn-bg);
+    border-radius:8px;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:0.86rem;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .expiry b{ font-family:"IBM Plex Mono", monospace; color:var(--accent); }
+
+  .verify{
+    background:var(--success-bg);
+    border-radius:8px;
+    padding:12px 16px;
+    display:flex;
+    gap:10px;
+    font-size:0.84rem;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .verify .dot{
+    flex:none;
+    width:20px; height:20px;
+    border-radius:50%;
+    background:var(--success);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.72rem;
+    margin-top:1px;
+  }
+  .verify b{ color:var(--ink); }
+
+  .invoice-footer{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.72rem;
+    color:var(--ink-faint);
+    border-top:1px solid var(--border);
+    padding-top:14px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .invoice-footer .mono{ font-family:"IBM Plex Mono", monospace; }
+
+  @media print{
+    .panel{ display:none; }
+    .stage{ padding:0; }
+    body{ background:#fff; }
+    .invoice{ box-shadow:none; border:none; border-radius:0; max-width:none; }
+    .shell{ display:block; max-width:none; }
+    .editor-only{ display:none !important; }
+  }
+</style>
+
+<div class="shell">
+  <aside class="panel">
+    <p class="panel-title" style="margin-top:0;">Generador de comprobantes</p>
+
+    <div class="field">
+      <label for="marca">Nombre de la marca</label>
+      <input id="marca" type="text" placeholder="Ej. Perform TV" value="Perform TV" maxlength="28">
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label for="color-fondo">Color de fondo (arriba)</label>
+        <input id="color-fondo" type="color" value="#10163a">
+      </div>
+      <div class="field">
+        <label for="color-logo">Color letras del logo</label>
+        <input id="color-logo" type="color" value="#ffffff">
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Tamaño nombre marca</label>
+        <div class="stepper">
+          <button type="button" class="btn-secondary step-btn" id="marca-menos" aria-label="Reducir tamaño">−</button>
+          <span class="mono" id="marca-size-display">18px</span>
+          <button type="button" class="btn-secondary step-btn" id="marca-mas" aria-label="Aumentar tamaño">+</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tamaño título "FACTURA"</label>
+        <div class="stepper">
+          <button type="button" class="btn-secondary step-btn" id="titulo-menos" aria-label="Reducir tamaño">−</button>
+          <span class="mono" id="titulo-size-display">22px</span>
+          <button type="button" class="btn-secondary step-btn" id="titulo-mas" aria-label="Aumentar tamaño">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="cliente">Nombre del cliente</label>
+      <input id="cliente" type="text" placeholder="Ej. Jaime Lastra" value="Jaime Lastra">
+    </div>
+
+    <div class="field">
+      <label for="moneda">Moneda</label>
+      <select id="moneda">
+        <option value="CLP" selected>CLP</option>
+        <option value="COP">COP</option>
+        <option value="USD">USD</option>
+        <option value="USDT">USDT</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div class="checkbox-field">
+        <input type="checkbox" id="descuento-activo">
+        <label for="descuento-activo">Aplicar descuento</label>
+      </div>
+    </div>
+    <div class="field descuento-pct-wrap" id="descuento-pct-wrap" data-active="false">
+      <label for="descuento-pct">Porcentaje de descuento (%)</label>
+      <input id="descuento-pct" type="number" min="0" max="100" step="1" value="20">
+    </div>
+
+    <div class="field">
+      <div class="checkbox-field">
+        <input type="checkbox" id="vencimiento-activo">
+        <label for="vencimiento-activo">Este comprobante tiene fecha de vencimiento</label>
+      </div>
+    </div>
+    <div class="field vigencia-wrap" id="vigencia-wrap" data-active="false">
+      <label for="vigencia-meses">Vigencia (meses)</label>
+      <input id="vigencia-meses" type="number" min="1" max="60" placeholder="Ej. 3">
+    </div>
+
+    <div class="field">
+      <label for="referencia">Referencia de la transferencia (4 dígitos)</label>
+      <input id="referencia" type="text" inputmode="numeric" pattern="[0-9]{1,4}" maxlength="4" placeholder="Ej. 4821">
+    </div>
+
+    <div class="auto-note">
+      Copia aquí los <b>últimos 4 dígitos</b> del código que aparece en el comprobante/captura de la transferencia del cliente — quedan como los últimos 4 del N° de transacción, para que cualquiera pueda cruzarlo con su comprobante bancario. La <b>fecha de pago</b> es automática; el <b>vencimiento</b> es opcional (actívalo arriba si tu servicio lo necesita).
+    </div>
+
+    <div class="field">
+      <label>Formato del archivo</label>
+      <div class="format-toggle">
+        <label><input type="radio" name="formato" value="pdf" checked> PDF</label>
+        <label><input type="radio" name="formato" value="imagen"> Imagen (JPG)</label>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="btn-generar">Generar nuevo comprobante</button>
+      <button class="btn-secondary" id="btn-whatsapp">Compartir por WhatsApp</button>
+      <button class="btn-secondary" id="btn-descargar">Descargar factura</button>
+      <button class="btn-secondary" id="btn-imprimir">Imprimir / Guardar PDF</button>
+    </div>
+    <p class="auto-note" id="share-fallback-note" hidden>
+      Tu navegador no ofrece compartir el archivo directamente (pasa en algunos PC). Usa <b>Imprimir / Guardar PDF</b> y adjúntalo a mano en WhatsApp.
+    </p>
+
+    <div class="counter-line">
+      <span>Fecha de pago asignada</span>
+      <span id="counter-display" class="mono">—</span>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="invoice" id="invoice">
+      <div class="invoice-header" id="invoice-header">
+        <div class="brand">
+          <svg viewBox="0 0 24 24" fill="none"><path id="logo-mark" d="M13 2 4 14h6l-1 8 9-13h-6l1-7Z" fill="#fff"/></svg>
+          <div class="brand-name" id="out-marca">Perform TV</div>
+        </div>
+        <div class="invoice-header-right">
+          <p class="factura-label" id="factura-label">FACTURA</p>
+          <span class="pill">Pagado</span>
+        </div>
+      </div>
+
+      <div class="invoice-body">
+        <div class="meta-grid">
+          <div class="meta-card">
+            <h3>Cliente</h3>
+            <p><b>Nombre:</b> <span id="out-cliente">Jaime Lastra</span></p>
+            <p><b>Servicio:</b> Entretenimiento Digital</p>
+            <p><b>Estado:</b> Activo</p>
+          </div>
+          <div class="meta-card">
+            <h3>Detalles de transacción</h3>
+            <p class="mono"><b>N° Transacción:</b> <span id="out-folio">00000000001</span></p>
+            <p class="mono"><b>Fecha Pago:</b> <span id="out-fecha-pago">—</span></p>
+            <p class="mono" id="row-vencimiento"><b>Vencimiento:</b> <span id="out-vencimiento">—</span></p>
+          </div>
+        </div>
+
+        <table class="concept">
+          <thead>
+            <tr><th>Concepto / Descripción</th><th>Periodo</th><th>Monto</th></tr>
+          </thead>
+          <tbody id="extra-rows"></tbody>
+        </table>
+
+        <button type="button" class="add-item-btn editor-only" id="btn-add-item">+ Agregar otro servicio</button>
+
+        <div class="totals">
+          <div class="line"><span>Subtotal</span><span class="mono" id="out-subtotal">$0 CLP</span></div>
+          <div class="line"><span id="descuento-label">Descuento</span><span class="mono" id="out-descuento">$0 CLP</span></div>
+          <div class="total"><span>Total pagado</span><span class="mono" id="out-total">$0 CLP</span></div>
+        </div>
+
+        <div class="expiry" id="expiry-banner">
+          <span>📅 Fecha de caducidad del servicio</span>
+          <b id="out-caducidad">—</b>
+        </div>
+
+        <div class="verify">
+          <span class="dot">✓</span>
+          <span><b>Pago verificado con éxito.</b> Este comprobante certifica el servicio activo desde el <span id="out-desde">—</span><span id="vencimiento-clause"> hasta su vencimiento el <span id="out-hasta">—</span></span>.</span>
+        </div>
+
+        <div class="invoice-footer">
+          <span><span id="out-marca-footer">Perform TV</span> — Comprobante de pago</span>
+          <span class="mono">Folio <span id="out-folio-footer">—</span></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal">
+    <h3 id="modal-title">Agregar servicio</h3>
+
+    <div class="field">
+      <label for="modal-tipo">Tipo de servicio</label>
+      <select id="modal-tipo">
+        <option value="suscripcion" selected>Suscripción / streaming (tiempo + dispositivos)</option>
+        <option value="creditos">Créditos para reseller</option>
+        <option value="licencia">Licencia (tiempo + dispositivo)</option>
+        <option value="otro">Otro / personalizado</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="modal-nombre">Concepto / nombre del servicio</label>
+      <input id="modal-nombre" type="text" placeholder="Ej. Cuenta adicional Netflix">
+    </div>
+
+    <div class="field" id="modal-group-suscripcion">
+      <div class="row-2">
+        <div class="field">
+          <label for="modal-tiempo">Meses contratados</label>
+          <input id="modal-tiempo" type="number" min="1" placeholder="Ej. 3">
+        </div>
+        <div class="field">
+          <label for="modal-dispositivos">Dispositivos</label>
+          <input id="modal-dispositivos" type="number" min="0" placeholder="Ej. 3">
+        </div>
+      </div>
+      <div class="field">
+        <label for="modal-desc-suscripcion">Descripción</label>
+        <input id="modal-desc-suscripcion" type="text" placeholder="Ej. Acceso a streaming HD/4K y catálogo completo.">
+      </div>
+    </div>
+
+    <div class="field" id="modal-group-licencia" hidden>
+      <div class="row-2">
+        <div class="field">
+          <label for="modal-tiempo-lic">Meses contratados</label>
+          <input id="modal-tiempo-lic" type="number" min="1" placeholder="Ej. 12">
+        </div>
+        <div class="field">
+          <label for="modal-dispositivos-lic">Dispositivos</label>
+          <input id="modal-dispositivos-lic" type="number" min="0" placeholder="Ej. 1" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="modal-group-creditos" hidden>
+      <div class="row-2">
+        <div class="field">
+          <label for="modal-creditos">Cantidad de créditos</label>
+          <input id="modal-creditos" type="number" min="0" placeholder="Ej. 500">
+        </div>
+        <div class="field">
+          <label for="modal-validez">Vigencia (meses)</label>
+          <input id="modal-validez" type="number" min="0" placeholder="Ej. 1">
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="modal-group-otro" hidden>
+      <label for="modal-descripcion">Descripción</label>
+      <input id="modal-descripcion" type="text" placeholder="Ej. Detalle libre del servicio">
+    </div>
+
+    <div class="field">
+      <label for="modal-precio">Precio</label>
+      <input id="modal-precio" type="number" min="0" step="500" placeholder="Ej. 5000">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="modal-cancelar">Cancelar</button>
+      <button type="button" class="btn-primary" id="modal-agregar">Agregar a la factura</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  function slug(s){
+    return (s || "cliente").trim().toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-+|-+$)/g, "") || "cliente";
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  let extraItems = [];
+  let editingId = null;
+
+  function pad(n, len){ return String(n).padStart(len, "0"); }
+
+  const CURRENCY_META = {
+    CLP: { symbol: "$", decimals: 0, locale: "es-CL" },
+    COP: { symbol: "$", decimals: 0, locale: "es-CO" },
+    USD: { symbol: "$", decimals: 2, locale: "en-US" },
+    USDT: { symbol: "", decimals: 2, locale: "en-US" }
+  };
+  function fmtMoney(n, currency){
+    const meta = CURRENCY_META[currency] || CURRENCY_META.CLP;
+    const formatted = n.toLocaleString(meta.locale, {
+      minimumFractionDigits: meta.decimals,
+      maximumFractionDigits: meta.decimals
+    });
+    return meta.symbol + formatted + " " + currency;
+  }
+
+  function fmtDate(d){
+    const dd = pad(d.getDate(),2), mm = pad(d.getMonth()+1,2), yyyy = d.getFullYear();
+    return dd + "/" + mm + "/" + yyyy;
+  }
+  function fmtDateShort(d){
+    const dd = pad(d.getDate(),2), mm = pad(d.getMonth()+1,2), yy = String(d.getFullYear()).slice(-2);
+    return dd + "/" + mm + "/" + yy;
+  }
+  function fmtDateTime(d){
+    return fmtDate(d) + " (" + pad(d.getHours(),2) + ":" + pad(d.getMinutes(),2) + " hrs)";
+  }
+  function addMonths(d, months){
+    const r = new Date(d);
+    r.setMonth(r.getMonth() + Number(months));
+    return r;
+  }
+  function fmtDuracionTag(meses){
+    meses = Number(meses);
+    if (meses % 12 === 0 && meses > 0) {
+      const anios = meses / 12;
+      return anios + (anios === 1 ? " año contratado" : " años contratados");
+    }
+    return meses + (meses === 1 ? " mes contratado" : " meses contratados");
+  }
+  function fmtDispositivosTag(n){
+    n = Number(n);
+    return n + (n === 1 ? " dispositivo" : " dispositivos simultáneos");
+  }
+  function iconDataURL(bg, fg, letter, size){
+    const c = document.createElement("canvas");
+    c.width = size; c.height = size;
+    const ctx = c.getContext("2d");
+    const r = size * 0.22;
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.arcTo(size, 0, size, size, r);
+    ctx.arcTo(size, size, 0, size, r);
+    ctx.arcTo(0, size, 0, 0, r);
+    ctx.arcTo(0, 0, size, 0, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = fg;
+    ctx.font = "bold " + Math.round(size * 0.52) + "px Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(letter, size / 2, size * 0.56);
+    return c.toDataURL("image/png");
+  }
+
+  function updateAppIdentity(marca, headerBg, logoColor){
+    const shortName = marca.slice(0, 12) || "Recibos";
+    const icon512 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "P").toUpperCase(), 512);
+    const icon180 = iconDataURL(headerBg, logoColor, (marca.trim()[0] || "P").toUpperCase(), 180);
+
+    const manifest = {
+      name: marca + " — Comprobantes",
+      short_name: shortName,
+      start_url: ".",
+      display: "standalone",
+      background_color: headerBg,
+      theme_color: headerBg,
+      icons: [
+        { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+      ]
+    };
+    document.getElementById("manifest-link").setAttribute(
+      "href",
+      "data:application/manifest+json," + encodeURIComponent(JSON.stringify(manifest))
+    );
+    document.getElementById("apple-icon-link").setAttribute("href", icon180);
+    document.getElementById("theme-color-meta").setAttribute("content", headerBg);
+    document.getElementById("apple-title-meta").setAttribute("content", shortName);
+    document.getElementById("page-title").textContent = marca + " — Comprobantes";
+    document.title = marca + " — Comprobantes";
+  }
+
+  let current = { fechaPago: null };
+
+  function render(){
+    const marca = document.getElementById("marca").value.trim() || "Mi Negocio";
+    const headerBg = document.getElementById("color-fondo").value;
+    const logoColor = document.getElementById("color-logo").value;
+    const cliente = document.getElementById("cliente").value.trim() || "Cliente";
+    const moneda = document.getElementById("moneda").value;
+    const referencia = (document.getElementById("referencia").value.replace(/\D/g, "") || "0000").slice(-4).padStart(4, "0");
+    const descuentoActivo = document.getElementById("descuento-activo").checked;
+    const descuentoPct = Math.min(100, Math.max(0, parseFloat(document.getElementById("descuento-pct").value || "0")));
+    document.getElementById("descuento-pct-wrap").setAttribute("data-active", String(descuentoActivo));
+    const vencimientoActivo = document.getElementById("vencimiento-activo").checked;
+    const vigenciaMeses = Math.max(1, parseInt(document.getElementById("vigencia-meses").value || "1", 10));
+    document.getElementById("vigencia-wrap").setAttribute("data-active", String(vencimientoActivo));
+
+    const fechaPago = current.fechaPago || new Date();
+    const vencimiento = vencimientoActivo ? addMonths(fechaPago, vigenciaMeses) : null;
+
+    document.getElementById("row-vencimiento").hidden = !vencimientoActivo;
+    document.getElementById("expiry-banner").hidden = !vencimientoActivo;
+    document.getElementById("vencimiento-clause").hidden = !vencimientoActivo;
+
+    document.getElementById("btn-add-item").textContent = extraItems.length > 0
+      ? "+ Agregar otro servicio"
+      : "+ Agregar servicio";
+
+    const extraTotal = extraItems.reduce(function(s, i){ return s + i.precio; }, 0);
+    const subtotal = extraTotal;
+    const descuentoMonto = descuentoActivo ? subtotal * (descuentoPct / 100) : 0;
+    const total = Math.max(0, subtotal - descuentoMonto);
+    const folioStr = "0000000" + referencia;
+
+    const extraRowsHtml = extraItems.map(function(item){
+      let periodo = "—";
+      let tagsHtml = "";
+      let descHtml = "";
+      if (item.tipo === "creditos") {
+        if (item.creditos) tagsHtml += '<span class="tag">' + item.creditos + ' créditos</span>';
+        if (item.validez) {
+          const vMeses = Number(item.validez);
+          tagsHtml += '<span class="tag">Válido ' + vMeses + (vMeses === 1 ? " mes" : " meses") + '</span>';
+          periodo = fmtDateShort(fechaPago) + " - " + fmtDateShort(addMonths(fechaPago, vMeses));
+        }
+      } else if (item.tipo === "licencia" || item.tipo === "suscripcion") {
+        if (item.descripcion) descHtml = '<div class="concept-desc">' + escapeHtml(item.descripcion) + '</div>';
+        if (item.tiempo) {
+          const tMeses = Number(item.tiempo);
+          tagsHtml += '<span class="tag">' + fmtDuracionTag(tMeses) + '</span>';
+          periodo = fmtDateShort(fechaPago) + " - " + fmtDateShort(addMonths(fechaPago, tMeses));
+        }
+        if (item.dispositivos) {
+          tagsHtml += '<span class="tag">' + fmtDispositivosTag(item.dispositivos) + '</span>';
+        }
+      } else if (item.descripcion) {
+        descHtml = '<div class="concept-desc">' + escapeHtml(item.descripcion) + '</div>';
+      }
+      return '<tr>' +
+        '<td><div class="concept-name">' + escapeHtml(item.nombre) + '</div>' + descHtml + tagsHtml + '</td>' +
+        '<td class="mono" style="white-space:nowrap;">' + (periodo !== "—" ? escapeHtml(periodo) : "—") + '</td>' +
+        '<td class="mono">' + fmtMoney(item.precio, moneda) +
+          '<button type="button" class="edit-item-btn editor-only" data-id="' + item.id + '" aria-label="Editar servicio">✎</button>' +
+          '<button type="button" class="remove-item-btn editor-only" data-id="' + item.id + '" aria-label="Quitar servicio">×</button>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+    document.getElementById("extra-rows").innerHTML = extraRowsHtml;
+
+    document.getElementById("descuento-label").textContent = descuentoActivo
+      ? "Descuento (" + descuentoPct + "%)"
+      : "Descuento";
+
+    document.getElementById("out-marca").textContent = marca;
+    document.getElementById("out-marca-footer").textContent = marca;
+    document.getElementById("logo-mark").setAttribute("fill", logoColor);
+    document.getElementById("invoice-header").style.setProperty("--hdr-bg", headerBg);
+    document.getElementById("invoice-header").style.setProperty("--logo-color", logoColor);
+
+    document.getElementById("out-cliente").textContent = cliente;
+    document.getElementById("out-folio").textContent = folioStr;
+    document.getElementById("out-folio-footer").textContent = "#" + folioStr;
+    document.getElementById("out-fecha-pago").textContent = fmtDateTime(fechaPago);
+    if (vencimiento) document.getElementById("out-vencimiento").textContent = fmtDate(vencimiento);
+    document.getElementById("out-subtotal").textContent = fmtMoney(subtotal, moneda);
+    document.getElementById("out-descuento").textContent = fmtMoney(descuentoMonto, moneda);
+    document.getElementById("out-total").textContent = fmtMoney(total, moneda);
+    if (vencimiento) document.getElementById("out-caducidad").textContent = fmtDate(vencimiento);
+    document.getElementById("out-desde").textContent = fmtDate(fechaPago);
+    if (vencimiento) document.getElementById("out-hasta").textContent = fmtDate(vencimiento);
+
+    document.getElementById("counter-display").textContent = fmtDateTime(fechaPago);
+
+    updateAppIdentity(marca, headerBg, logoColor);
+  }
+
+  function generarNuevo(){
+    current.fechaPago = new Date();
+    extraItems = [];
+    editingId = null;
+    document.getElementById("cliente").value = "";
+    document.getElementById("descuento-activo").checked = false;
+    document.getElementById("referencia").value = "";
+    document.getElementById("vencimiento-activo").checked = false;
+    document.getElementById("vigencia-meses").value = "";
+    render();
+  }
+
+  const DEFAULT_SUSCRIPCION_NOMBRE = "Servicio de Entretenimiento";
+  const DEFAULT_SUSCRIPCION_DESC = "Acceso a streaming HD/4K y catálogo completo.";
+
+  function actualizarCamposModal(){
+    const tipo = document.getElementById("modal-tipo").value;
+    document.getElementById("modal-group-suscripcion").hidden = tipo !== "suscripcion";
+    document.getElementById("modal-group-licencia").hidden = tipo !== "licencia";
+    document.getElementById("modal-group-creditos").hidden = tipo !== "creditos";
+    document.getElementById("modal-group-otro").hidden = tipo !== "otro";
+  }
+
+  function aplicarPredeterminadosSuscripcion(){
+    if (editingId) return;
+    if (document.getElementById("modal-tipo").value !== "suscripcion") return;
+    if (!document.getElementById("modal-nombre").value.trim()){
+      document.getElementById("modal-nombre").value = DEFAULT_SUSCRIPCION_NOMBRE;
+    }
+    if (!document.getElementById("modal-desc-suscripcion").value.trim()){
+      document.getElementById("modal-desc-suscripcion").value = DEFAULT_SUSCRIPCION_DESC;
+    }
+  }
+
+  function abrirModal(){
+    editingId = null;
+    document.getElementById("modal-title").textContent = "Agregar servicio";
+    document.getElementById("modal-agregar").textContent = "Agregar a la factura";
+    document.getElementById("modal-tipo").value = "suscripcion";
+    document.getElementById("modal-nombre").value = "";
+    document.getElementById("modal-tiempo").value = "";
+    document.getElementById("modal-dispositivos").value = "";
+    document.getElementById("modal-desc-suscripcion").value = "";
+    document.getElementById("modal-tiempo-lic").value = "";
+    document.getElementById("modal-dispositivos-lic").value = "1";
+    document.getElementById("modal-creditos").value = "";
+    document.getElementById("modal-validez").value = "";
+    document.getElementById("modal-descripcion").value = "";
+    document.getElementById("modal-precio").value = "";
+    actualizarCamposModal();
+    aplicarPredeterminadosSuscripcion();
+    document.getElementById("modal-overlay").hidden = false;
+    document.getElementById("modal-nombre").focus();
+  }
+
+  function abrirModalEditar(item){
+    editingId = item.id;
+    document.getElementById("modal-title").textContent = "Editar servicio";
+    document.getElementById("modal-agregar").textContent = "Guardar cambios";
+    document.getElementById("modal-tipo").value = item.tipo;
+    document.getElementById("modal-nombre").value = item.nombre || "";
+    document.getElementById("modal-precio").value = item.precio || "";
+    document.getElementById("modal-tiempo").value = "";
+    document.getElementById("modal-dispositivos").value = "";
+    document.getElementById("modal-desc-suscripcion").value = "";
+    document.getElementById("modal-tiempo-lic").value = "";
+    document.getElementById("modal-dispositivos-lic").value = "1";
+    document.getElementById("modal-creditos").value = "";
+    document.getElementById("modal-validez").value = "";
+    document.getElementById("modal-descripcion").value = "";
+
+    if (item.tipo === "suscripcion") {
+      document.getElementById("modal-tiempo").value = item.tiempo || "";
+      document.getElementById("modal-dispositivos").value = item.dispositivos || "";
+      document.getElementById("modal-desc-suscripcion").value = item.descripcion || "";
+    } else if (item.tipo === "licencia") {
+      document.getElementById("modal-tiempo-lic").value = item.tiempo || "";
+      document.getElementById("modal-dispositivos-lic").value = item.dispositivos || "";
+    } else if (item.tipo === "creditos") {
+      document.getElementById("modal-creditos").value = item.creditos || "";
+      document.getElementById("modal-validez").value = item.validez || "";
+    } else {
+      document.getElementById("modal-descripcion").value = item.descripcion || "";
+    }
+
+    actualizarCamposModal();
+    document.getElementById("modal-overlay").hidden = false;
+    document.getElementById("modal-nombre").focus();
+  }
+
+  function cerrarModal(){
+    document.getElementById("modal-overlay").hidden = true;
+  }
+  function agregarServicio(){
+    const nombre = document.getElementById("modal-nombre").value.trim();
+    if (!nombre){ document.getElementById("modal-nombre").focus(); return; }
+    const tipo = document.getElementById("modal-tipo").value;
+    const precio = Math.max(0, parseFloat(document.getElementById("modal-precio").value || "0"));
+    const item = { id: editingId || Date.now(), tipo: tipo, nombre: nombre, precio: precio };
+
+    if (tipo === "suscripcion") {
+      const meses = parseInt(document.getElementById("modal-tiempo").value || "0", 10);
+      if (meses > 0) item.tiempo = meses;
+      const disp = parseInt(document.getElementById("modal-dispositivos").value || "0", 10);
+      if (disp > 0) item.dispositivos = disp;
+      item.descripcion = document.getElementById("modal-desc-suscripcion").value.trim();
+    } else if (tipo === "licencia") {
+      const meses = parseInt(document.getElementById("modal-tiempo-lic").value || "0", 10);
+      if (meses > 0) item.tiempo = meses;
+      const disp = parseInt(document.getElementById("modal-dispositivos-lic").value || "0", 10);
+      if (disp > 0) item.dispositivos = disp;
+    } else if (tipo === "creditos") {
+      const creditos = parseInt(document.getElementById("modal-creditos").value || "0", 10);
+      if (creditos > 0) item.creditos = creditos;
+      const validez = parseInt(document.getElementById("modal-validez").value || "0", 10);
+      if (validez > 0) item.validez = validez;
+    } else {
+      item.descripcion = document.getElementById("modal-descripcion").value.trim();
+    }
+
+    if (editingId) {
+      const idx = extraItems.findIndex(function(i){ return i.id === editingId; });
+      if (idx !== -1) extraItems[idx] = item;
+    } else {
+      extraItems.push(item);
+    }
+    cerrarModal();
+    render();
+  }
+
+  function formatoSeleccionado(){
+    const radio = document.querySelector('input[name="formato"]:checked');
+    return radio ? radio.value : "pdf";
+  }
+
+  async function generarArchivoFactura(formato){
+    const node = document.getElementById("invoice");
+    const canvas = await html2canvas(node, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      onclone: function(clonedDoc){
+        clonedDoc.querySelectorAll(".editor-only").forEach(function(el){ el.remove(); });
+      }
+    });
+    const cliente = document.getElementById("cliente").value.trim() || "Cliente";
+    const baseName = "factura-" + slug(cliente);
+
+    if (formato === "imagen") {
+      const blob = await new Promise(function(resolve){ canvas.toBlob(resolve, "image/jpeg", 0.92); });
+      const filename = baseName + ".jpg";
+      return { file: new File([blob], filename, { type: "image/jpeg" }), blob: blob, filename: filename };
+    }
+
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: "px", format: [canvas.width, canvas.height] });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    const blob = pdf.output("blob");
+    const filename = baseName + ".pdf";
+    return { file: new File([blob], filename, { type: "application/pdf" }), blob: blob, filename: filename };
+  }
+
+  async function compartirArchivo(){
+    const btn = document.getElementById("btn-whatsapp");
+    const fallbackNote = document.getElementById("share-fallback-note");
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Generando…";
+    fallbackNote.hidden = true;
+    try {
+      const formato = formatoSeleccionado();
+      const { file } = await generarArchivoFactura(formato);
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: file.name });
+      } else {
+        fallbackNote.hidden = false;
+      }
+    } catch (err) {
+      if (!(err && err.name === "AbortError")) {
+        fallbackNote.hidden = false;
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  async function guardarArchivoBlob(blob, filename){
+    if (typeof window.claude !== "undefined" && window.claude.use) {
+      try {
+        const downloads = await window.claude.use("downloads");
+        if (downloads) {
+          await downloads.save({ filename: filename, data: blob });
+          return;
+        }
+      } catch (err) {
+        if (err && err.code === "declined") return;
+        // any other capability error: fall through to the standard method below
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  async function descargarArchivo(){
+    const btn = document.getElementById("btn-descargar");
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Generando…";
+    try {
+      const formato = formatoSeleccionado();
+      const { blob, filename } = await generarArchivoFactura(formato);
+      await guardarArchivoBlob(blob, filename);
+    } catch (err) {
+      /* generation failed silently; user can retry */
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  function ajustarTitulo(delta){
+    const el = document.getElementById("factura-label");
+    const current = parseFloat(getComputedStyle(el).fontSize);
+    const next = Math.min(64, Math.max(14, current + delta));
+    el.style.fontSize = next + "px";
+    document.getElementById("titulo-size-display").textContent = Math.round(next) + "px";
+  }
+
+  function ajustarMarca(delta){
+    const el = document.getElementById("out-marca");
+    const current = parseFloat(getComputedStyle(el).fontSize);
+    const next = Math.min(48, Math.max(11, current + delta));
+    el.style.fontSize = next + "px";
+    document.getElementById("marca-size-display").textContent = Math.round(next) + "px";
+  }
+
+  document.getElementById("btn-generar").addEventListener("click", generarNuevo);
+  document.getElementById("btn-imprimir").addEventListener("click", function(){ window.print(); });
+  document.getElementById("btn-whatsapp").addEventListener("click", compartirArchivo);
+  document.getElementById("btn-descargar").addEventListener("click", descargarArchivo);
+  document.getElementById("titulo-mas").addEventListener("click", function(){ ajustarTitulo(2); });
+  document.getElementById("titulo-menos").addEventListener("click", function(){ ajustarTitulo(-2); });
+  document.getElementById("marca-mas").addEventListener("click", function(){ ajustarMarca(2); });
+  document.getElementById("marca-menos").addEventListener("click", function(){ ajustarMarca(-2); });
+
+  document.getElementById("btn-add-item").addEventListener("click", abrirModal);
+  document.getElementById("modal-cancelar").addEventListener("click", cerrarModal);
+  document.getElementById("modal-agregar").addEventListener("click", agregarServicio);
+  document.getElementById("modal-tipo").addEventListener("change", function(){
+    actualizarCamposModal();
+    aplicarPredeterminadosSuscripcion();
+  });
+  document.getElementById("modal-overlay").addEventListener("click", function(e){
+    if (e.target.id === "modal-overlay") cerrarModal();
+  });
+  document.getElementById("extra-rows").addEventListener("click", function(e){
+    const editBtn = e.target.closest(".edit-item-btn");
+    if (editBtn) {
+      const id = Number(editBtn.getAttribute("data-id"));
+      const item = extraItems.find(function(i){ return i.id === id; });
+      if (item) abrirModalEditar(item);
+      return;
+    }
+    const delBtn = e.target.closest(".remove-item-btn");
+    if (delBtn) {
+      const id = Number(delBtn.getAttribute("data-id"));
+      extraItems = extraItems.filter(function(i){ return i.id !== id; });
+      render();
+    }
+  });
+  document.getElementById("descuento-activo").addEventListener("change", render);
+  document.getElementById("vencimiento-activo").addEventListener("change", render);
+  document.getElementById("vigencia-meses").addEventListener("input", render);
+
+  ["marca","color-fondo","color-logo","cliente","moneda","descuento-pct","referencia"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", render);
+  });
+
+  // Estado inicial: fecha y referencia sugerida listas para un primer ejemplo.
+  generarNuevo();
+  ajustarTitulo(0);
+  ajustarMarca(0);
+})();
+</script>
